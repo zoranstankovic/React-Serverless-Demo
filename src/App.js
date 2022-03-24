@@ -6,8 +6,8 @@ import GameOver from "./pages/GameOver";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import { Container } from "./styled/Container";
-import { Main } from "./components/Main";
-import Global from "./components/Global";
+import { Main } from "./styled/Main";
+import Global from "./styled/Global";
 
 function App() {
   return (

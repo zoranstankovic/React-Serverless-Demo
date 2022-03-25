@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   StyledCharacter,
@@ -9,13 +9,16 @@ import {
 import { Strong } from "../styled/Random";
 
 export default function Game() {
+  const MAX_SECONDS = 5;
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
   const navigate = useNavigate();
   const [score, setScore] = useState(0);
-  const MAX_SECONDS = 5;
   const [ms, setMs] = useState(0);
   const [seconds, setSeconds] = useState(MAX_SECONDS);
+  const [currentCharacter, setCurrentCharacter] = useState("");
 
   useEffect(() => {
+    setRandomCharacter();
     const currentTime = new Date();
     const interval = setInterval(() => updateTime(currentTime, 1));
     return () => clearInterval(interval);
@@ -41,23 +44,39 @@ export default function Game() {
     }
   }, [seconds, navigate]);
 
-  const keyUpHandler = (e) => {
-    console.log(e.key);
-  };
+  const keyUpHandler = useCallback(
+    (e) => {
+      console.log(e.key);
+      if (e.key === currentCharacter) {
+        setScore((prevScore) => prevScore + 1);
+      } else {
+        if (score > 0) {
+          setScore((prevScore) => prevScore - 1);
+        }
+      }
+      setRandomCharacter();
+    },
+    [currentCharacter]
+  );
 
   useEffect(() => {
     document.addEventListener("keyup", keyUpHandler);
     return () => {
       document.removeEventListener("keyup", keyUpHandler);
     };
-  }, []);
+  }, [keyUpHandler]);
+
+  const setRandomCharacter = () => {
+    const randomInt = Math.floor(Math.random() * 36);
+    setCurrentCharacter(characters[randomInt]);
+  };
 
   return (
     <StyledGame>
       <StyledScore>
         Score: <Strong>{score}</Strong>
       </StyledScore>
-      <StyledCharacter>A</StyledCharacter>
+      <StyledCharacter>{currentCharacter}</StyledCharacter>
       <StyledTimer>
         Time:{" "}
         <Strong>
